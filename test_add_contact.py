@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 import unittest, time, re
+from contact import Contact
 
 
 class AddContact(unittest.TestCase):
@@ -19,7 +20,7 @@ class AddContact(unittest.TestCase):
         self.open_homepage(driver)
         self.login(driver, username="admin", password="secret")
         self.open_contact_creation_page(driver)
-        self.create_contact(driver, firstname="Anna", lastname="Smith", mob_phone="+79111024402", email="qwerty@mail.mail", bday="1", bmonth="January", byear="1955")
+        self.create_contact(driver, Contact(firstname="Anna", lastname="Smith", mphone="+79111024402", email="qwerty@mail.mail", bday="1", bmonth="January", byear="1955"))
         self.return_to_homepage(driver)
         self.logout(driver)
 
@@ -28,7 +29,7 @@ class AddContact(unittest.TestCase):
         self.open_homepage(driver)
         self.login(driver, username="admin", password="secret")
         self.open_contact_creation_page(driver)
-        self.create_contact(driver, firstname="", lastname="", mob_phone="", email="", bday="", bmonth="-", byear="")
+        self.create_contact(driver, Contact(firstname="", lastname="", mphone="", email="", bday="", bmonth="-", byear=""))
         self.return_to_homepage(driver)
         self.logout(driver)
 
@@ -39,30 +40,30 @@ class AddContact(unittest.TestCase):
     def return_to_homepage(self, driver):
         driver.find_element_by_link_text("home page").click()
 
-    def create_contact(self, driver, firstname, lastname, mob_phone, email, bday, bmonth, byear):
+    def create_contact(self, driver, contact):
         # fill contact form
         driver.find_element_by_name("firstname").click()
         driver.find_element_by_name("firstname").clear()
-        driver.find_element_by_name("firstname").send_keys(firstname)
+        driver.find_element_by_name("firstname").send_keys(contact.firstname)
         driver.find_element_by_name("lastname").click()
         driver.find_element_by_name("lastname").clear()
-        driver.find_element_by_name("lastname").send_keys(lastname)
+        driver.find_element_by_name("lastname").send_keys(contact.lastname)
         driver.find_element_by_name("mobile").click()
         driver.find_element_by_name("mobile").clear()
-        driver.find_element_by_name("mobile").send_keys(mob_phone)
+        driver.find_element_by_name("mobile").send_keys(contact.mphone)
         driver.find_element_by_name("email").click()
         driver.find_element_by_name("email").clear()
-        driver.find_element_by_name("email").send_keys(email)
+        driver.find_element_by_name("email").send_keys(contact.email)
         # birthday
         driver.find_element_by_name("bday").click()
-        Select(driver.find_element_by_name("bday")).select_by_visible_text(bday)
+        Select(driver.find_element_by_name("bday")).select_by_visible_text(contact.bday)
         driver.find_element_by_name("bday").click()
         driver.find_element_by_name("bmonth").click()
-        Select(driver.find_element_by_name("bmonth")).select_by_visible_text(bmonth)
+        Select(driver.find_element_by_name("bmonth")).select_by_visible_text(contact.bmonth)
         driver.find_element_by_name("bmonth").click()
         driver.find_element_by_name("byear").click()
         driver.find_element_by_name("byear").clear()
-        driver.find_element_by_name("byear").send_keys(byear)
+        driver.find_element_by_name("byear").send_keys(contact.byear)
         # submit contact creation
         driver.find_element_by_xpath("(//input[@name='submit'])[2]").click()
 
