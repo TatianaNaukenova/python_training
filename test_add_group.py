@@ -8,7 +8,7 @@ from group import Group
 
 class AddGroup(unittest.TestCase):
     def setUp(self):
-        self.driver = webdriver.Chrome('C:\\Data\\utilites\\chromedriver.exe')
+        self.driver = webdriver.Chrome()
         # self.driver = webdriver.Firefox()
         self.driver.implicitly_wait(30)
         self.base_url = "https://www.google.com/"
