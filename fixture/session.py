@@ -15,5 +15,5 @@ class SessionHelper:
         driver.find_element_by_xpath("//input[@value='Login']").click()
 
     def logout(self):
-            driver = self.app.driver
-            driver.find_element_by_link_text("Logout").click()
+        driver = self.app.driver
+        driver.find_element_by_link_text("Logout").click()
