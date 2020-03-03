@@ -1,4 +1,7 @@
+# from fixture.application import Application
+
 from selenium.webdriver.support.ui import Select
+
 
 
 class ContactHelper:
@@ -39,5 +42,20 @@ class ContactHelper:
         # submit contact creation
         driver.find_element_by_xpath("(//input[@name='submit'])[2]").click()
         driver.find_element_by_link_text("home page").click()
+
+    def delete_first_contact(self):
+        driver = self.app.driver
+        self.app.open_home_page()
+        # select first contact
+        driver.find_element_by_name("selected[]").click()
+        # submit deletion
+        driver.find_element_by_xpath("//input[@value='Delete']").click()
+        driver.switch_to_alert().accept()
+        # return to home page
+        self.app.open_home_page()
+
+
+
+
 
 
