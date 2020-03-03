@@ -38,3 +38,20 @@ class GroupHelper:
     def return_to_groups_page(self):
         driver = self.app.driver
         driver.find_element_by_link_text("group page").click()
+
+    def modify_first_group(self):
+        driver = self.app.driver
+        self.open_groups_page()
+        # select first group
+        driver.find_element_by_name("selected[]").click()
+        # init group modification
+        driver.find_element_by_name("edit").click()
+        # modify data (filling form)
+        driver.find_element_by_name("group_name").click()
+        driver.find_element_by_name("group_name").clear()
+        driver.find_element_by_name("group_name").send_keys("new_group1")
+        driver.find_element_by_name("group_header").click()
+        driver.find_element_by_name("group_header").clear()
+        driver.find_element_by_name("group_header").send_keys("qwe1")
+        # submit modification
+        driver.find_element_by_name("update").click()
