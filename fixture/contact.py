@@ -54,6 +54,22 @@ class ContactHelper:
         # return to home page
         self.app.open_home_page()
 
+    def modify_first_contact(self):
+        driver = self.app.driver
+        self.app.open_home_page()
+        # select first contact
+        driver.find_element_by_name("selected[]").click()
+        driver.find_element_by_xpath("//img[@alt='Edit']").click()
+        driver.find_element_by_name("firstname").click()
+        driver.find_element_by_name("firstname").clear()
+        driver.find_element_by_name("firstname").send_keys("name737")
+        driver.find_element_by_name("work").click()
+        driver.find_element_by_name("work").clear()
+        driver.find_element_by_name("work").send_keys("111222555")
+        driver.find_element_by_xpath("//input[@value='Update']").click()
+        self.app.open_home_page()
+
+
 
 
 
