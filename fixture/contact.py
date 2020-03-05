@@ -3,7 +3,6 @@
 from selenium.webdriver.support.ui import Select
 
 
-
 class ContactHelper:
 
     def __init__(self, app):
@@ -30,7 +29,7 @@ class ContactHelper:
         self.change_calendar_value("bday", contact.bday)
         self.change_calendar_value("bmonth", contact.bmonth)
         self.change_text_field_value("byear", contact.byear)
-       
+
     def change_calendar_value(self, field_name, text):
         driver = self.app.driver
         if text is not None:
