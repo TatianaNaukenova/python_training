@@ -16,58 +16,64 @@ class ContactHelper:
     def add_new(self, contact):
         driver = self.app.driver
         self.open_contact_creation_page()
-        # fill contact form
-        driver.find_element_by_name("firstname").click()
-        driver.find_element_by_name("firstname").clear()
-        driver.find_element_by_name("firstname").send_keys(contact.firstname)
-        driver.find_element_by_name("lastname").click()
-        driver.find_element_by_name("lastname").clear()
-        driver.find_element_by_name("lastname").send_keys(contact.lastname)
-        driver.find_element_by_name("mobile").click()
-        driver.find_element_by_name("mobile").clear()
-        driver.find_element_by_name("mobile").send_keys(contact.mphone)
-        driver.find_element_by_name("email").click()
-        driver.find_element_by_name("email").clear()
-        driver.find_element_by_name("email").send_keys(contact.email)
-        # birthday
-        driver.find_element_by_name("bday").click()
-        Select(driver.find_element_by_name("bday")).select_by_visible_text(contact.bday)
-        driver.find_element_by_name("bday").click()
-        driver.find_element_by_name("bmonth").click()
-        Select(driver.find_element_by_name("bmonth")).select_by_visible_text(contact.bmonth)
-        driver.find_element_by_name("bmonth").click()
-        driver.find_element_by_name("byear").click()
-        driver.find_element_by_name("byear").clear()
-        driver.find_element_by_name("byear").send_keys(contact.byear)
+        self.fill_contact_form(contact)
         # submit contact creation
         driver.find_element_by_xpath("(//input[@name='submit'])[2]").click()
         driver.find_element_by_link_text("home page").click()
 
+    def fill_contact_form(self, contact):
+        driver = self.app.driver
+        self.change_text_field_value("firstname", contact.firstname)
+        self.change_text_field_value("lastname", contact.lastname)
+        self.change_text_field_value("mobile", contact.mphone)
+        self.change_text_field_value("email", contact.email)
+        self.change_calendar_value("bday", contact.bday)
+        self.change_calendar_value("bmonth", contact.bmonth)
+        self.change_text_field_value("byear", contact.byear)
+       
+    def change_calendar_value(self, field_name, text):
+        driver = self.app.driver
+        if text is not None:
+            driver.find_element_by_name(field_name).click()
+            Select(driver.find_element_by_name(field_name)).select_by_visible_text(text)
+            driver.find_element_by_name(field_name).click()
+
+    def change_text_field_value(self, field_name, text):
+        driver = self.app.driver
+        if text is not None:
+            driver.find_element_by_name(field_name).click()
+            driver.find_element_by_name(field_name).clear()
+            driver.find_element_by_name(field_name).send_keys(text)
+
     def delete_first_contact(self):
         driver = self.app.driver
         self.app.open_home_page()
-        # select first contact
-        driver.find_element_by_name("selected[]").click()
+        self.select_first_contact()
         # submit deletion
         driver.find_element_by_xpath("//input[@value='Delete']").click()
         driver.switch_to_alert().accept()
         # return to home page
         self.app.open_home_page()
 
-    def modify_first_contact(self):
+    def modify_first_contact(self, new_contact_data):
         driver = self.app.driver
         self.app.open_home_page()
-        # select first contact
-        driver.find_element_by_name("selected[]").click()
+        self.select_first_contact()
+        # init editing
         driver.find_element_by_xpath("//img[@alt='Edit']").click()
-        driver.find_element_by_name("firstname").click()
-        driver.find_element_by_name("firstname").clear()
-        driver.find_element_by_name("firstname").send_keys("name737")
-        driver.find_element_by_name("work").click()
-        driver.find_element_by_name("work").clear()
-        driver.find_element_by_name("work").send_keys("111222555")
+        self.fill_contact_form(new_contact_data)
+        # submit
         driver.find_element_by_xpath("//input[@value='Update']").click()
         self.app.open_home_page()
+
+    def select_first_contact(self):
+        driver = self.app.driver
+        driver.find_element_by_name("selected[]").click()
+
+    def count(self):
+        driver = self.app.driver
+        self.app.open_home_page()
+        return len(driver.find_elements_by_name("selected[]"))
 
 
 
