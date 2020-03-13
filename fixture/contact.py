@@ -20,6 +20,7 @@ class ContactHelper:
         # submit contact creation
         driver.find_element_by_xpath("(//input[@name='submit'])[2]").click()
         driver.find_element_by_link_text("home page").click()
+        self.contact_cache = None
 
     def fill_contact_form(self, contact):
         driver = self.app.driver
@@ -45,45 +46,64 @@ class ContactHelper:
             driver.find_element_by_name(field_name).clear()
             driver.find_element_by_name(field_name).send_keys(text)
 
-    def delete_first_contact(self):
+    def delete__first_contact(self):
+        self.delete_contact_by_index(0)
+
+    def delete_contact_by_index(self, index):
         driver = self.app.driver
         self.app.open_home_page()
-        self.select_first_contact()
+        self.select_contact_by_index(index)
         # submit deletion
         driver.find_element_by_xpath("//input[@value='Delete']").click()
         driver.switch_to_alert().accept()
         # return to home page
         self.app.open_home_page()
+        self.contact_cache = None
 
     def modify_first_contact(self, new_contact_data):
+        self.modify_contact_by_index(0)
+
+    def modify_contact_by_index(self, index, new_contact_data):
         driver = self.app.driver
         self.app.open_home_page()
-        self.select_first_contact()
+        self.select_contact_by_index(index)
         # init editing
-        driver.find_element_by_xpath("//img[@alt='Edit']").click()
+        driver.find_elements_by_xpath("// img[@ alt='Edit']")[index].click()
+        # driver.find_element_by_xpath("//img[@alt='Edit']")[index].click()
         self.fill_contact_form(new_contact_data)
         # submit
         driver.find_element_by_xpath("//input[@value='Update']").click()
         self.app.open_home_page()
+        self.contact_cache = None
 
-    def select_first_contact(self):
+    def select_contact_by_index(self, index):
         driver = self.app.driver
-        driver.find_element_by_name("selected[]").click()
+        driver.find_elements_by_name("selected[]")[index].click()
+
+    # def edit_contact_by_index(self, index):
+    #     driver = self.app.driver
+    #     driver.find_element_by_xpath("//img[@alt='Edit']")[index].click()
 
     def count(self):
         driver = self.app.driver
         self.app.open_home_page()
         return len(driver.find_elements_by_name("selected[]"))
 
+    contact_cache = None
+
     def get_contact_list(self):
-        driver = self.app.driver
-        self.app.open_home_page()
-        contacts = []
-        for element in driver.find_elements_by_name("entry"):
-            # text = element.text
-            id = element.find_element_by_name("selected[]").get_attribute("value")
-            contacts.append(Contact(id=id))
-        return contacts
+        if self.contact_cache is None:
+            driver = self.app.driver
+            self.app.open_home_page()
+            self.contact_cache = []
+            for element in driver.find_elements_by_name("entry"):
+                id = element.find_element_by_name("selected[]").get_attribute("value")
+                cells = element.find_elements_by_tag_name("td")
+                lastname = cells[1].text
+                firstname = cells[2].text
+                self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id))
+        return list(self.contact_cache)
+
 
 
 
