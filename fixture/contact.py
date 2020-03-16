@@ -2,6 +2,7 @@
 
 from selenium.webdriver.support.ui import Select
 from model.contact import Contact
+import re
 
 
 class ContactHelper:
@@ -68,21 +69,31 @@ class ContactHelper:
         self.app.open_home_page()
         self.select_contact_by_index(index)
         # init editing
-        driver.find_elements_by_xpath("// img[@ alt='Edit']")[index].click()
-        # driver.find_element_by_xpath("//img[@alt='Edit']")[index].click()
+        self.open_contact_to_edit_by_index(index)
         self.fill_contact_form(new_contact_data)
         # submit
         driver.find_element_by_xpath("//input[@value='Update']").click()
         self.app.open_home_page()
         self.contact_cache = None
 
+    def open_contact_to_edit_by_index(self, index):
+        driver = self.app.driver
+        self.app.open_home_page()
+        driver.find_elements_by_xpath("// img[@ alt='Edit']")[index].click()
+
     def select_contact_by_index(self, index):
         driver = self.app.driver
+        self.app.open_home_page()
         driver.find_elements_by_name("selected[]")[index].click()
 
     # def edit_contact_by_index(self, index):
     #     driver = self.app.driver
     #     driver.find_element_by_xpath("//img[@alt='Edit']")[index].click()
+
+    def open_contact_view_page_by_index(self, index):
+        driver = self.app.driver
+        self.app.open_home_page()
+        driver.find_elements_by_xpath("// img[@ alt='Details']")[index].click()
 
     def count(self):
         driver = self.app.driver
@@ -101,8 +112,33 @@ class ContactHelper:
                 cells = element.find_elements_by_tag_name("td")
                 lastname = cells[1].text
                 firstname = cells[2].text
-                self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id))
+                all_phones = cells[5].text
+                self.contact_cache.append(Contact(firstname=firstname, lastname=lastname, id=id,
+                                                  all_phones_from_homepage=all_phones))
         return list(self.contact_cache)
+
+    def get_contact_info_from_edit_page(self, index):
+        self.open_contact_to_edit_by_index(index)
+        driver = self.app.driver
+        firstname = driver.find_element_by_name("firstname").get_attribute("value")
+        lastname = driver.find_element_by_name("lastname").get_attribute("value")
+        id = driver.find_element_by_name("id").get_attribute("value")
+        homephone = driver.find_element_by_name("home").get_attribute("value")
+        mphone = driver.find_element_by_name("mobile").get_attribute("value")
+        workphone = driver.find_element_by_name("work").get_attribute("value")
+        return Contact(firstname=firstname, lastname=lastname, id=id,
+                       homephone=homephone, mphone=mphone, workphone=workphone)
+
+    def get_contact_from_view_page(self, index):
+        driver = self.app.driver
+        self.open_contact_view_page_by_index(index)
+        text = driver.find_element_by_id("content").text
+        homephone = re.search("H: (.*)", text).group(1)
+        mphone = re.search("M: (.*)", text).group(1)
+        workphone = re.search("W: (.*)", text).group(1)
+        return Contact(homephone=homephone, mphone=mphone, workphone=workphone)
+
+
 
 
 
