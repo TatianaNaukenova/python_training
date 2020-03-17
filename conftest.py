@@ -8,14 +8,15 @@ fixture = None
 @pytest.fixture
 def app(request):
     global fixture
+    browser = request.config.getoption("--browser")
+    base_url = request.config.getoption("--baseUrl")
+    admin_pass = request.config.getoption("--adminsPass")
     if fixture is None:
-        browser = request.config.getoption("--browser")
-        base_url = request.config.getoption("--base_url")
-        fixture = Application(browser=browser, base_url=base_url)
+        fixture = Application(browser=browser, base_url=base_url, admin_pass=admin_pass)
     else:
         if not fixture.is_valid():
-            fixture = Application()
-    fixture.session.ensure_login(username="admin", password="secret")
+            fixture = Application(browser=browser, base_url=base_url, admin_pass=admin_pass)
+    fixture.session.ensure_login(username="admin", password=admin_pass)
     return fixture
 
 
@@ -30,4 +31,5 @@ def stop(request):
 
 def pytest_addoption(parser):
     parser.addoption("--browser", action="store", default="chrome")
-    parser.addoption("--base_url", action="store", default="http://10.50.26.174/addressbook/")
+    parser.addoption("--baseUrl", action="store", default="http://10.50.26.174/addressbook/")
+    parser.addoption("--adminsPass", action="store", default="")
